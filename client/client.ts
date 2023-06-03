@@ -1,6 +1,6 @@
-console.log("[spawner] Client Resource Started")
+import h from '../hashes.json'
 
-import h from "../hashes.json"
+console.log('[spawner] Client Resource Started')
 const hashes = h as { [key: string]: string }
 
 RegisterCommand('heal', () => {
@@ -12,7 +12,7 @@ RegisterCommand('heal', () => {
 // teleport to waypoint fivem command
 RegisterCommand('tpm', () => {
   const waypoint = GetFirstBlipInfoId(8)
-  if (!DoesBlipExist(waypoint)) return console.log("[spawner] No waypoint set")
+  if (!DoesBlipExist(waypoint)) return console.log('[spawner] No waypoint set')
   const [x, y, z] = GetBlipInfoIdCoord(waypoint)
   const id = PlayerId()
   SetPedCoordsKeepVehicle(GetPlayerPed(id), x, y, 0)
@@ -39,17 +39,17 @@ RegisterCommand('aimObj', () => {
     const [_, entity] = GetEntityPlayerIsFreeAimingAt(PlayerId())
     if (!entity) return
     const [x, y, z] = GetEntityCoords(entity, true)
-    
+
     // get object name
     const hash = GetEntityModel(entity)
     const [onScreen, x2, y2] = GetScreenCoordFromWorldCoord(x, y, z + 1.5)
     if (!onScreen) return
     SetTextFont(0)
-    SetTextScale(0.0, .5)
+    SetTextScale(0.0, 0.5)
     SetTextColour(255, 255, 255, 255)
     SetTextOutline()
     SetTextCentre(true)
-    SetTextEntry("STRING")
+    SetTextEntry('STRING')
     AddTextComponentString(hashes[hash])
     DrawText(x2, y2)
 
@@ -58,7 +58,6 @@ RegisterCommand('aimObj', () => {
     }
   })
 }, false)
-
 
 // set night
 RegisterCommand('night', () => {
