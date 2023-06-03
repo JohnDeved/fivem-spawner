@@ -5,37 +5,29 @@
   // client/client.ts
   console.log("[spawner] Client Resource Started");
   var hashes = hashes_default;
-  RegisterCommand("heal", () => {
-    const id = PlayerId();
-    SetEntityHealth(GetPlayerPed(id), 200);
-    SetVehicleFixed(GetVehiclePedIsIn(GetPlayerPed(id), false));
-  }, false);
-  RegisterCommand("tpm", () => {
-    const waypoint = GetFirstBlipInfoId(8);
-    if (!DoesBlipExist(waypoint))
-      return console.log("[spawner] No waypoint set");
-    const [x, y, z] = GetBlipInfoIdCoord(waypoint);
-    const id = PlayerId();
-    SetPedCoordsKeepVehicle(GetPlayerPed(id), x, y, 0);
-    SetEntityVisible(GetPlayerPed(id), false, false);
-    let groundZ = z;
-    const tickId = setTick(() => {
-      groundZ += 1;
-      SetEntityCoordsNoOffset(GetPlayerPed(id), x, y, groundZ, false, false, false);
-      const [_, z2] = GetGroundZFor_3dCoord(x, y, groundZ, false);
-      if (z2 !== 0) {
-        clearTick(tickId);
-        SetPedCoordsKeepVehicle(GetPlayerPed(id), x, y, z2);
-        SetEntityVisible(GetPlayerPed(id), true, false);
-      }
-    });
-  }, false);
+  var drawObj = null;
+  function drawOutline(entity) {
+    if (!entity) {
+      SetEntityDrawOutline(drawObj, false);
+      drawObj = null;
+    }
+    if (drawObj !== entity) {
+      SetEntityDrawOutline(drawObj, false);
+      drawObj = entity;
+    }
+    if (!IsEntityAnObject(entity))
+      return;
+    SetEntityDrawOutlineShader(1);
+    SetEntityDrawOutlineColor(255, 255, 255, 255);
+    SetEntityDrawOutline(drawObj, true);
+  }
   RegisterCommand("aimObj", () => {
     setTick(() => {
       const [_, entity] = GetEntityPlayerIsFreeAimingAt(PlayerId());
       if (!entity)
-        return;
+        return drawOutline();
       const [x, y, z] = GetEntityCoords(entity, true);
+      drawOutline(entity);
       const hash = GetEntityModel(entity);
       const [onScreen, x2, y2] = GetScreenCoordFromWorldCoord(x, y, z + 1.5);
       if (!onScreen)

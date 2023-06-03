@@ -3,42 +3,32 @@ import h from '../hashes.json'
 console.log('[spawner] Client Resource Started')
 const hashes = h as { [key: string]: string }
 
-RegisterCommand('heal', () => {
-  const id = PlayerId()
-  SetEntityHealth(GetPlayerPed(id), 200)
-  SetVehicleFixed(GetVehiclePedIsIn(GetPlayerPed(id), false))
-}, false)
+let drawObj: number = null
+function drawOutline (entity?: number) {
+  if (!entity) {
+    SetEntityDrawOutline(drawObj, false)
+    drawObj = null
+  }
 
-// teleport to waypoint fivem command
-RegisterCommand('tpm', () => {
-  const waypoint = GetFirstBlipInfoId(8)
-  if (!DoesBlipExist(waypoint)) return console.log('[spawner] No waypoint set')
-  const [x, y, z] = GetBlipInfoIdCoord(waypoint)
-  const id = PlayerId()
-  SetPedCoordsKeepVehicle(GetPlayerPed(id), x, y, 0)
+  if (drawObj !== entity) {
+    SetEntityDrawOutline(drawObj, false)
+    drawObj = entity
+  }
 
-  // set player invisible
-  SetEntityVisible(GetPlayerPed(id), false, false)
+  if (!IsEntityAnObject(entity)) return // causes crash otherwise
 
-  let groundZ = z
-  const tickId = setTick(() => {
-    groundZ += 1
-    SetEntityCoordsNoOffset(GetPlayerPed(id), x, y, groundZ, false, false, false)
-    const [_, z2] = GetGroundZFor_3dCoord(x, y, groundZ, false)
-    if (z2 !== 0) {
-      clearTick(tickId)
-      SetPedCoordsKeepVehicle(GetPlayerPed(id), x, y, z2)
-      SetEntityVisible(GetPlayerPed(id), true, false)
-    }
-  })
-}, false)
+  SetEntityDrawOutlineShader(1)
+  SetEntityDrawOutlineColor(255, 255, 255, 255)
+  SetEntityDrawOutline(drawObj, true)
+}
 
 RegisterCommand('aimObj', () => {
-  // show aim target object name
   setTick(() => {
     const [_, entity] = GetEntityPlayerIsFreeAimingAt(PlayerId())
-    if (!entity) return
+    if (!entity) return drawOutline()
     const [x, y, z] = GetEntityCoords(entity, true)
+
+    drawOutline(entity)
 
     // get object name
     const hash = GetEntityModel(entity)
