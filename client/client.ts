@@ -43,8 +43,10 @@ RegisterCommand('aimObj', () => {
     AddTextComponentString(hashes[hash])
     DrawText(x2, y2)
 
-    if (IsControlJustPressed(0, 51)) {
+    if (IsControlJustPressed(0, 51)) { // E
       console.log(hashes[hash])
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      globalThis.exports['fivem-copy-to-clipboard']?.copyToClipboard?.(hashes[hash])
     }
   })
 }, false)

@@ -42,6 +42,7 @@
       DrawText(x2, y2);
       if (IsControlJustPressed(0, 51)) {
         console.log(hashes[hash]);
+        globalThis.exports["fivem-copy-to-clipboard"]?.copyToClipboard?.(hashes[hash]);
       }
     });
   }, false);
